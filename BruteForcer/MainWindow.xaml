@@ -1,0 +1,26 @@
+﻿<Window x:Class="BruteForcer.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:BruteForcer"
+        mc:Ignorable="d"
+        Background="#212121"
+        Title="MainWindow" Height="450" Width="800">
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="35" />
+            <RowDefinition Height="1*" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*" />
+            <ColumnDefinition Width="4*" />
+            <ColumnDefinition Width="1*" />
+        </Grid.ColumnDefinitions>
+        
+        <TextBox Name="Threads" Grid.Row="0" Grid.Column="0" Text="4" />
+        <TextBox Name="Server" Grid.Row="0" Grid.Column="1" Text="http://localhost:5000/login" />
+        <Button Name="StartBtn" Grid.Row="0" Grid.Column="2" Content="Start" Click="StartBtn_OnClick" Background="#2962FF" Foreground="White" BorderThickness="0" FontSize="14" />
+        <ListBox Name="PasswordsLsbx" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" />
+    </Grid>
+</Window>

@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Login", "Login\Login.csproj", "{E1EEC464-1AEE-4027-874D-2EE8B6BB5DB0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BruteForcer", "BruteForcer\BruteForcer.csproj", "{79EE3E1E-3391-437B-B3C8-95D4726A2899}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E1EEC464-1AEE-4027-874D-2EE8B6BB5DB0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E1EEC464-1AEE-4027-874D-2EE8B6BB5DB0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E1EEC464-1AEE-4027-874D-2EE8B6BB5DB0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E1EEC464-1AEE-4027-874D-2EE8B6BB5DB0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{79EE3E1E-3391-437B-B3C8-95D4726A2899}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{79EE3E1E-3391-437B-B3C8-95D4726A2899}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{79EE3E1E-3391-437B-B3C8-95D4726A2899}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{79EE3E1E-3391-437B-B3C8-95D4726A2899}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
