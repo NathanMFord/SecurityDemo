@@ -4,21 +4,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
-using System.Security.Cryptography;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
-using System.Timers;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace BruteForcer {
     /// <summary>
@@ -26,7 +15,8 @@ namespace BruteForcer {
     /// </summary>
     public partial class MainWindow : Window {
         private readonly ConcurrentQueue<string> _passwordQueue;
-        
+        private readonly HttpClient _client = new HttpClient();
+
         private int _threads;
         private string _server;
         private bool _broken;
@@ -37,10 +27,10 @@ namespace BruteForcer {
         public MainWindow() {
             InitializeComponent();
 
-            // List<string> passwords = File.ReadAllLines("passwords.txt").ToList();
-            // passwords.Shuffle();
-            // _passwordQueue= new ConcurrentQueue<string>(passwords);
-            _passwordQueue = new ConcurrentQueue<string>(new List<string> {"test", "password"});
+            List<string> passwords = File.ReadAllLines("passwords.txt").ToList().GetRange(0, 100_000);
+            passwords.Shuffle();
+            PasswordIndexLbl.Content = $"Index: {passwords.IndexOf("password")}";
+            _passwordQueue = new ConcurrentQueue<string>(passwords);
         }
 
         private async void StartBtn_OnClick(object sender, RoutedEventArgs e) {
@@ -52,6 +42,7 @@ namespace BruteForcer {
                 StartBtn.Content = "Start";
                 _stopwatch?.Stop();
                 _pause = true;
+                MessageBox.Show("Paused");
                 return;
             }
 
@@ -66,39 +57,54 @@ namespace BruteForcer {
             }
 
             _server = Server.Text.Trim();
-            
+
             _stopwatch = Stopwatch.StartNew();
             Task[] tasks = new Task[_threads];
             for (int i = 0; i < _threads; i++) {
-                tasks[i] = Task.Run(BruteForceLogin);
+                tasks[i] = Task.Run(BruteForceLogin, CancellationToken.None);
             }
-            
+
             await Task.WhenAny(tasks);
             _stopwatch.Stop();
-            MessageBox.Show(_broken ? $"Done -- Finished in {_stopwatch.Elapsed:g}" : "Paused");
+            if (_pause)
+                return;
+
+            MessageBox.Show($"Done -- Finished in {_stopwatch.Elapsed:g} after {_passwords} attempts");
+            if (_passwordQueue.Contains("password"))
+                throw new Exception("Stopped processing but didn't crack password!");
+
             StartBtn.Content = "Start";
             _pause = true;
         }
 
         private async Task BruteForceLogin() {
             while (!_broken && !_pause) {
-                if (_passwordQueue.TryDequeue(out string password) == false)
+                if (_passwordQueue.TryDequeue(out string password) == false) {
+                    Console.WriteLine("Failed to dequeue password");
                     return;
+                }
+
                 _broken = await PostServer("admin", password);
-                _passwords++;                    
+                _passwords++;
             }
         }
 
         private async Task<bool> PostServer(string username, string password) {
-            using HttpClient client = new HttpClient();
-            HttpResponseMessage response = await client.GetAsync(_server + $"?username={username}&password={password}");
-            using HttpContent content = response.Content;
-            string data = await content.ReadAsStringAsync();
-            
-            if (data != null && bool.TryParse(data, out bool broken))
-                return broken;
-            
-            return false;
+            try {
+                using HttpResponseMessage response =
+                    await _client.GetAsync(_server + $"?username={username}&password={password}");
+                using HttpContent content = response.Content;
+                string data = await content.ReadAsStringAsync();
+
+                if (data != null && bool.TryParse(data, out bool broken))
+                    return broken || _broken;
+
+                return _broken;
+            } catch (Exception ex) {
+                Console.WriteLine(ex.Message);
+                _passwordQueue.Enqueue(password);
+                return _broken;
+            }
         }
     }
 }
